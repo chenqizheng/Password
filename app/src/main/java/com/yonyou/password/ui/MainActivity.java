@@ -16,8 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.yonyou.password.R;
-import com.yonyou.password.ui.lock.LockActivity;
 import com.yonyou.password.ui.password.AddPassword;
+import com.yonyou.password.ui.password.PasswordDetail;
 import com.yonyou.password.ui.password.PasswordFragment;
 import com.yonyou.password.ui.password.PasswordList;
 
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView(savedInstanceState);
+
     }
 
     private void initView(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, LockActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddPassword.class);
                 startActivityForResult(intent, REQUEST_CODE_ADD);
             }
         });
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity
 
         mPasswordFragment = new PasswordFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.content_main, mPasswordFragment).commit();
+
     }
 
     @Override
@@ -126,6 +128,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(PasswordList.Password item) {
-
+        Intent intent = new Intent(this, PasswordDetail.class);
+        intent.putExtra(PasswordDetail.EXTRA_STRING_ID, item.id);
+        startActivity(intent);
     }
 }

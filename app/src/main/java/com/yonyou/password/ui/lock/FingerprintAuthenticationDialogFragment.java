@@ -31,14 +31,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yonyou.password.R;
-import com.yonyou.password.ui.MainActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -57,12 +53,7 @@ import javax.crypto.KeyGenerator;
 public class FingerprintAuthenticationDialogFragment extends DialogFragment
         implements TextView.OnEditorActionListener, FingerprintUiHelper.Callback {
 
-    private Button mCancelButton;
-    private Button mSecondDialogButton;
     private View mFingerprintContent;
-    private View mBackupContent;
-    private EditText mPassword;
-    private CheckBox mUseFingerprintFutureCheckBox;
     private TextView mPasswordDescriptionTextView;
     private TextView mNewFingerprintEnrolledTextView;
 
@@ -88,32 +79,8 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fingerprint_dialog_container, container, false);
-        mCancelButton = (Button) v.findViewById(R.id.cancel_button);
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
-
-        mSecondDialogButton = (Button) v.findViewById(R.id.second_dialog_button);
-        mSecondDialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mStage == Stage.FINGERPRINT) {
-                    goToBackup();
-                } else {
-                    verifyPassword();
-                }
-            }
-        });
         mFingerprintContent = v.findViewById(R.id.fingerprint_container);
-        mBackupContent = v.findViewById(R.id.backup_container);
-        mPassword = (EditText) v.findViewById(R.id.password);
-        mPassword.setOnEditorActionListener(this);
         mPasswordDescriptionTextView = (TextView) v.findViewById(R.id.password_description);
-        mUseFingerprintFutureCheckBox = (CheckBox)
-                v.findViewById(R.id.use_fingerprint_in_future_check);
         mNewFingerprintEnrolledTextView = (TextView)
                 v.findViewById(R.id.new_fingerprint_enrolled_description);
         mFingerprintUiHelper = new FingerprintUiHelper(
@@ -171,10 +138,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     private void goToBackup() {
         mStage = Stage.PASSWORD;
         updateStage();
-        mPassword.requestFocus();
 
-        // Show the keyboard.
-        mPassword.postDelayed(mShowKeyboardRunnable, 500);
 
         // Fingerprint is not used anymore. Stop listening for it.
         mFingerprintUiHelper.stopListening();
@@ -185,23 +149,13 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
      * let's the activity know about the result.
      */
     private void verifyPassword() {
-        if (!checkPassword(mPassword.getText().toString())) {
-            return;
-        }
         if (mStage == Stage.NEW_FINGERPRINT_ENROLLED) {
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean(getString(R.string.use_fingerprint_to_authenticate_key),
-                    mUseFingerprintFutureCheckBox.isChecked());
-            editor.apply();
 
-            if (mUseFingerprintFutureCheckBox.isChecked()) {
-                // Re-create the key so that fingerprints including new ones are validated.
-                createKey("default", true);
-                mStage = Stage.FINGERPRINT;
-            }
+            // Re-create the key so that fingerprints including new ones are validated.
+            createKey("default", true);
+            mStage = Stage.FINGERPRINT;
         }
-        mPassword.setText("");
-//        mActivity.onPurchased(false /* without Fingerprint */, null);
+
         dismiss();
     }
 
@@ -261,32 +215,18 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         return password.length() > 0;
     }
 
-    private final Runnable mShowKeyboardRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mInputMethodManager.showSoftInput(mPassword, 0);
-        }
-    };
-
     private void updateStage() {
         switch (mStage) {
             case FINGERPRINT:
-                mCancelButton.setText(R.string.cancel);
-                mSecondDialogButton.setText(R.string.use_password);
                 mFingerprintContent.setVisibility(View.VISIBLE);
-                mBackupContent.setVisibility(View.GONE);
                 break;
             case NEW_FINGERPRINT_ENROLLED:
                 // Intentional fall through
             case PASSWORD:
-                mCancelButton.setText(R.string.cancel);
-                mSecondDialogButton.setText(R.string.ok);
                 mFingerprintContent.setVisibility(View.GONE);
-                mBackupContent.setVisibility(View.VISIBLE);
                 if (mStage == Stage.NEW_FINGERPRINT_ENROLLED) {
                     mPasswordDescriptionTextView.setVisibility(View.GONE);
                     mNewFingerprintEnrolledTextView.setVisibility(View.VISIBLE);
-                    mUseFingerprintFutureCheckBox.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -303,10 +243,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     @Override
     public void onAuthenticated() {
-        // Callback from FingerprintUiHelper. Let the activity know that authentication was
-        // successful.
-//        mActivity.onPurchased(true /* withFingerprint */, mCryptoObject);
-        dismiss();
+        getActivity().finish();
     }
 
     @Override
