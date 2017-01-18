@@ -248,7 +248,6 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     @Override
     public void onError() {
-        goToBackup();
     }
 
     /**

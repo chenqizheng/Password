@@ -22,6 +22,7 @@ public class MainApplication extends Application {
     private static final String TAG = "MainApplication";
     private int mActivityCount = 0;
     private boolean mIsForegroud = false;
+    private boolean mShowingLock = false;
 
     public boolean isForegroud() {
         return mIsForegroud;
@@ -37,8 +38,13 @@ public class MainApplication extends Application {
 
             @Override
             public void onActivityStarted(Activity activity) {
+                if(activity instanceof LockActivity){
+                    mShowingLock = true;
+                }
                 if (!isForegroud() && !isApplicationBroughtToBackground()) {
                     Intent intent = new Intent(activity, LockActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                     startActivity(intent);
                 }
                 mActivityCount++;
@@ -60,6 +66,9 @@ public class MainApplication extends Application {
 
             @Override
             public void onActivityStopped(Activity activity) {
+                if(activity instanceof LockActivity){
+                    mShowingLock = false;
+                }
                 mActivityCount--;
                 Log.i(TAG, "mActivityCount = " + mActivityCount);
                 if (mActivityCount == 0) {
