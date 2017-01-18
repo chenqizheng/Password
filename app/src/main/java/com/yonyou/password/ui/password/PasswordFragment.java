@@ -44,7 +44,7 @@ public class PasswordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        PasswordList.ITEMS.addAll(getPasswordList());
         if (getArguments() != null) {
         }
     }
@@ -58,11 +58,15 @@ public class PasswordFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            PasswordList.ITEMS.addAll(getPasswordList());
             adapter = new MyPasswordRecyclerViewAdapter(PasswordList.ITEMS, mListener);
             recyclerView.setAdapter(adapter);
         }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override

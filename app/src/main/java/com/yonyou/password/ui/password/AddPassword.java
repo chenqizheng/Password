@@ -24,6 +24,13 @@ public class AddPassword extends AppCompatActivity {
         setContentView(R.layout.activity_add_password);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(android.support.design.R.drawable.abc_ic_ab_back_material);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         saveButton = (Button) findViewById(R.id.save);
         nameEdit = (EditText) findViewById(R.id.edit_name);
         passwordEdit = (EditText) findViewById(R.id.edit_password);
