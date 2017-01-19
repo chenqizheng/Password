@@ -44,7 +44,7 @@ public class PasswordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PasswordList.ITEMS.addAll(getPasswordList());
+        PasswordList.ITEMS.addAll(getPasswordList(getContext()));
         if (getArguments() != null) {
         }
     }
@@ -74,13 +74,13 @@ public class PasswordFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_ADD:
-                adapter.bind(getPasswordList());
+                adapter.bind(getPasswordList(getContext()));
                 break;
         }
     }
 
-    private ArrayList<PasswordList.Password> getPasswordList() {
-        Cursor cursor = getContext().getContentResolver().query(Password.PasswordTable.CONTENT_URI, null,
+    public static ArrayList<PasswordList.Password> getPasswordList(Context context) {
+        Cursor cursor = context.getContentResolver().query(Password.PasswordTable.CONTENT_URI, null,
                 null, null, null);
         ArrayList<PasswordList.Password> passwordArrayList = new ArrayList<PasswordList.Password>();
         if (cursor != null) {

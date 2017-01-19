@@ -33,7 +33,8 @@
         <activity android:name=".ui.lock.LockActivity"
                   android:launchMode="singleTop">
         </activity>
-        <activity android:name=".ui.password.PasswordDetail">
+        <activity android:name=".ui.password.PasswordDetail"
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

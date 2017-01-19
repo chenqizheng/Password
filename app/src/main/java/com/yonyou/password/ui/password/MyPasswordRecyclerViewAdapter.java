@@ -1,13 +1,17 @@
 package com.yonyou.password.ui.password;
 
+import android.content.ContentUris;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.yonyou.password.R;
+import com.yonyou.password.provider.Password;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +33,7 @@ public class MyPasswordRecyclerViewAdapter extends RecyclerView.Adapter<MyPasswo
         if (mValues != null) {
             mValues.clear();
             mValues.addAll(items);
+            notifyDataSetChanged();
         }
     }
 
@@ -55,6 +60,14 @@ public class MyPasswordRecyclerViewAdapter extends RecyclerView.Adapter<MyPasswo
                 }
             }
         });
+        holder.mDelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.getContext().getContentResolver().delete(ContentUris.withAppendedId(Password.PasswordTable.CONTENT_URI, Long.parseLong(holder.mItem.id)), null, null);
+                ArrayList<PasswordList.Password> passwordArrayList = PasswordFragment.getPasswordList(v.getContext());
+                bind(passwordArrayList);
+            }
+        });
     }
 
     @Override
@@ -66,6 +79,7 @@ public class MyPasswordRecyclerViewAdapter extends RecyclerView.Adapter<MyPasswo
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
+        public final Button mDelButton;
         public PasswordList.Password mItem;
 
         public ViewHolder(View view) {
@@ -73,6 +87,7 @@ public class MyPasswordRecyclerViewAdapter extends RecyclerView.Adapter<MyPasswo
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mDelButton = (Button) view.findViewById(R.id.del);
         }
 
         @Override
